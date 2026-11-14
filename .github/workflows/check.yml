@@ -1,5 +1,4 @@
 # Same checks as scripts/check.ps1, run by GitHub on each push.
-# Status: written in the first slice but NOT yet run (nothing has been pushed).
 name: check
 on: [push, pull_request]
 jobs:
