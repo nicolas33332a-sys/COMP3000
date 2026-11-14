@@ -1,0 +1,21 @@
+# Local development database only. The password below is a local default,
+# not a secret; do not reuse this file for any deployment.
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_USER: marinescope
+      POSTGRES_PASSWORD: marinescope-local
+      POSTGRES_DB: marinescope
+    ports:
+      - "127.0.0.1:${MARINESCOPE_DB_PORT:-5432}:5432"
+    volumes:
+      - marinescope-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marinescope -d marinescope"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  marinescope-db:

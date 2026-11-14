@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: { "/api": "http://127.0.0.1:8000" },
-    // Allow importing the shared example in ../docs/contracts.
+    // Allow importing the shared example in ../contracts.
     fs: { allow: [".."] },
   },
 });

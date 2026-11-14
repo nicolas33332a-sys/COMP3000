@@ -1,6 +1,7 @@
 # Runs every automated check for the repository. Usage (from the repo root):
 #   powershell -ExecutionPolicy Bypass -File scripts/check.ps1
-# Requires the setup steps in README.md to have been done once.
+# Requires the setup steps in README.md to have been done once, and the
+# database container to be running:  docker compose up -d --wait
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 

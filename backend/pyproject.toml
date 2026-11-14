@@ -8,11 +8,16 @@ version = "0.1.0.dev0"
 description = "MarineScope backend: scenario contract, API and NOAA OISST data pipeline"
 requires-python = ">=3.12"
 # Lower bounds only. The versions actually installed and tested are recorded in
-# requirements.lock.txt (pip freeze) and docs/sprints/S01-slice-1-record.md.
+# requirements.lock.txt (pip freeze).
 dependencies = [
     "fastapi>=0.115",
     "uvicorn>=0.30",
     "pydantic>=2.7",
+    "sqlalchemy>=2.0",
+    "psycopg[binary]>=3.2",
+    "alembic>=1.13",
+    "geoalchemy2>=0.15",
+    "shapely>=2.0",
 ]
 
 [project.optional-dependencies]

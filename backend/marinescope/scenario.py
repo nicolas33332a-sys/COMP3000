@@ -1,10 +1,10 @@
 """The minimal scenario contract (backlog MS-03 slice, used by MS-04 onwards).
 
 This module is the single source of truth for the scenario shape. The JSON
-Schema in docs/contracts/scenario.schema.json is generated from it, and the
+Schema in contracts/scenario.schema.json is generated from it, and the
 TypeScript types in frontend/src/scenario.ts mirror it by hand.
 
-Conventions (see docs/contracts/scenario-contract.md for the reasoning):
+Conventions:
 
 * Coordinates are WGS84 decimal degrees. Longitude is -180..180 (east
   positive), latitude is -90..90 (north positive). Fields are always named

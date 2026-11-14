@@ -37,7 +37,7 @@ BASE_URL = (
     "v2.1/access/avhrr"
 )
 PRODUCT_PAGE = "https://www.ncei.noaa.gov/products/optimum-interpolation-sst"
-DEFAULT_MANIFEST = REPO_ROOT / "docs" / "data" / "oisst-pilot-manifest.json"
+DEFAULT_MANIFEST = REPO_ROOT / "manifests" / "oisst-pilot-manifest.json"
 USER_AGENT = "MarineScope-data-pipeline (student project; urllib)"
 
 

@@ -1,4 +1,4 @@
-"""Write the scenario JSON Schema to docs/contracts/scenario.schema.json.
+"""Write the scenario JSON Schema to contracts/scenario.schema.json.
 
 Run from the backend folder:  python -m marinescope.export_schema
 A test fails if the committed file is out of date with scenario.py.
@@ -11,7 +11,7 @@ from pathlib import Path
 
 from .scenario import ScenarioInput
 
-SCHEMA_PATH = Path(__file__).resolve().parents[2] / "docs" / "contracts" / "scenario.schema.json"
+SCHEMA_PATH = Path(__file__).resolve().parents[2] / "contracts" / "scenario.schema.json"
 
 
 def render_schema() -> str:

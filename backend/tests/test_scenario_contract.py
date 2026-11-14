@@ -18,12 +18,9 @@ from pydantic import ValidationError
 from marinescope.export_schema import SCHEMA_PATH, render_schema
 from marinescope.scenario import ScenarioInput
 
-EXAMPLE_PATH = Path(__file__).resolve().parents[2] / "docs" / "contracts" / "scenario.example.json"
+EXAMPLE_PATH = Path(__file__).resolve().parents[2] / "contracts" / "scenario.example.json"
 
 
-@pytest.fixture
-def example() -> dict:
-    return json.loads(EXAMPLE_PATH.read_text(encoding="utf-8"))
 
 
 def test_documented_example_is_valid_and_round_trips(example):
@@ -94,5 +91,5 @@ def test_missing_required_field_is_rejected(example, missing):
 
 def test_committed_json_schema_matches_model():
     assert SCHEMA_PATH.read_text(encoding="utf-8") == render_schema(), (
-        "docs/contracts/scenario.schema.json is stale; run: python -m marinescope.export_schema"
+        "contracts/scenario.schema.json is stale; run: python -m marinescope.export_schema"
     )

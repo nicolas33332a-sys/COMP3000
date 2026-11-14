@@ -1,8 +1,7 @@
 // TypeScript mirror of the scenario contract.
 //
 // Source of truth: backend/marinescope/scenario.py
-// Generated schema: docs/contracts/scenario.schema.json
-// Explanation:      docs/contracts/scenario-contract.md
+// Generated schema: contracts/scenario.schema.json
 //
 // Conventions: WGS84 decimal degrees, lon -180..180, lat -90..90. Fields are
 // named lon/lat; when a bare pair is needed (GeoJSON, MapLibre) the order is

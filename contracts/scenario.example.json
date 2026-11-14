@@ -1,0 +1,17 @@
+{
+  "name": "Celtic Sea pilot transect",
+  "region": { "west": -16.0, "south": 44.0, "east": -4.0, "north": 52.0 },
+  "data_period": { "start_date": "2024-06-01", "end_date": "2024-06-14" },
+  "vessel": {
+    "name": "Survey vessel 1",
+    "speed_knots": 8.0,
+    "departure_time": "2024-06-01T06:00:00Z"
+  },
+  "waypoints": [
+    { "lon": -6.0, "lat": 49.5 },
+    { "lon": -9.0, "lat": 48.5 },
+    { "lon": -12.0, "lat": 47.0 },
+    { "lon": -13.5, "lat": 45.5 }
+  ],
+  "sampling": { "interval_minutes": 60, "noise_std_c": 0.1, "random_seed": 42 }
+}

@@ -1,0 +1,199 @@
+{
+  "$defs": {
+    "DataPeriod": {
+      "additionalProperties": false,
+      "description": "Historical reference-data period in UTC days, inclusive at both ends.",
+      "properties": {
+        "end_date": {
+          "format": "date",
+          "title": "End Date",
+          "type": "string"
+        },
+        "start_date": {
+          "format": "date",
+          "title": "Start Date",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start_date",
+        "end_date"
+      ],
+      "title": "DataPeriod",
+      "type": "object"
+    },
+    "RegionBounds": {
+      "additionalProperties": false,
+      "description": "Axis-aligned box. Boxes that cross the antimeridian are not supported.",
+      "properties": {
+        "east": {
+          "description": "Degrees east, WGS84, -180..180",
+          "maximum": 180,
+          "minimum": -180,
+          "title": "East",
+          "type": "number"
+        },
+        "north": {
+          "description": "Degrees north, WGS84, -90..90",
+          "maximum": 90,
+          "minimum": -90,
+          "title": "North",
+          "type": "number"
+        },
+        "south": {
+          "description": "Degrees north, WGS84, -90..90",
+          "maximum": 90,
+          "minimum": -90,
+          "title": "South",
+          "type": "number"
+        },
+        "west": {
+          "description": "Degrees east, WGS84, -180..180",
+          "maximum": 180,
+          "minimum": -180,
+          "title": "West",
+          "type": "number"
+        }
+      },
+      "required": [
+        "west",
+        "south",
+        "east",
+        "north"
+      ],
+      "title": "RegionBounds",
+      "type": "object"
+    },
+    "SamplingSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "interval_minutes": {
+          "description": "Time between simulated readings",
+          "maximum": 1440,
+          "minimum": 1,
+          "title": "Interval Minutes",
+          "type": "integer"
+        },
+        "noise_std_c": {
+          "default": 0.0,
+          "description": "Std. dev. of simulated sensor noise, degrees Celsius",
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Noise Std C",
+          "type": "number"
+        },
+        "random_seed": {
+          "default": 0,
+          "description": "Seed for reproducible noise",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Random Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "interval_minutes"
+      ],
+      "title": "SamplingSettings",
+      "type": "object"
+    },
+    "VesselSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "departure_time": {
+          "description": "When the vessel leaves the first waypoint. ISO 8601 with offset; stored as UTC",
+          "format": "date-time",
+          "title": "Departure Time",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "speed_knots": {
+          "description": "Constant speed over ground, knots",
+          "exclusiveMinimum": 0,
+          "maximum": 50,
+          "title": "Speed Knots",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "speed_knots",
+        "departure_time"
+      ],
+      "title": "VesselSettings",
+      "type": "object"
+    },
+    "Waypoint": {
+      "additionalProperties": false,
+      "properties": {
+        "lat": {
+          "description": "Degrees north, WGS84, -90..90",
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "description": "Degrees east, WGS84, -180..180",
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Lon",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lon",
+        "lat"
+      ],
+      "title": "Waypoint",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "What a client submits to create a scenario.",
+  "properties": {
+    "data_period": {
+      "$ref": "#/$defs/DataPeriod"
+    },
+    "name": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "region": {
+      "$ref": "#/$defs/RegionBounds"
+    },
+    "sampling": {
+      "$ref": "#/$defs/SamplingSettings"
+    },
+    "vessel": {
+      "$ref": "#/$defs/VesselSettings"
+    },
+    "waypoints": {
+      "description": "Route in visiting order",
+      "items": {
+        "$ref": "#/$defs/Waypoint"
+      },
+      "maxItems": 100,
+      "minItems": 2,
+      "title": "Waypoints",
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "region",
+    "data_period",
+    "vessel",
+    "waypoints",
+    "sampling"
+  ],
+  "title": "ScenarioInput",
+  "type": "object"
+}

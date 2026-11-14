@@ -4,9 +4,10 @@ Example (from the backend folder, after fetch_oisst):
 
     python -m marinescope.pipeline.inspect_oisst
 
-Reads the subset named in docs/data/oisst-pilot-manifest.json, verifies its
+Reads the subset named in manifests/oisst-pilot-manifest.json, verifies its
 checksum, then records dates, units, coordinates, array shapes and the
-land/missing mask in docs/evaluation/s01-oisst-pilot/inspection.json and
+land/missing mask in docs/evaluation/s01-oisst-pilot/inspection.json (a local,
+Git-ignored folder) and
 draws reference_plot.png next to it.
 
 This is a technical check that the data path works. It says nothing about
@@ -30,7 +31,7 @@ from . import REPO_ROOT, data_dir
 from .fetch_oisst import DEFAULT_MANIFEST, sha256_of
 
 DEFAULT_OUT = REPO_ROOT / "docs" / "evaluation" / "s01-oisst-pilot"
-EXAMPLE_SCENARIO = REPO_ROOT / "docs" / "contracts" / "scenario.example.json"
+EXAMPLE_SCENARIO = REPO_ROOT / "contracts" / "scenario.example.json"
 
 
 def cell_edges(centres: np.ndarray) -> np.ndarray:

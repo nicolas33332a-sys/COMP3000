@@ -4,6 +4,19 @@ on: [push, pull_request]
 jobs:
   backend:
     runs-on: ubuntu-latest
+    # The API tests need a real PostgreSQL/PostGIS database (same image as docker-compose.yml).
+    services:
+      db:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_USER: marinescope
+          POSTGRES_PASSWORD: marinescope-local
+          POSTGRES_DB: marinescope
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U marinescope -d marinescope"
+          --health-interval 5s --health-timeout 3s --health-retries 20
     defaults:
       run:
         working-directory: backend

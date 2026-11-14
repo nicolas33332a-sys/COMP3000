@@ -1,4 +1,4 @@
-# Large or downloaded data never goes into Git (see docs/data/oisst-pilot.md)
+# Large or downloaded data never goes into Git
 /data/
 *.nc
 *.part
@@ -23,3 +23,6 @@ dist/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Project notes, records and write-ups stay local (hard rule: never commit docs/)
+/docs/

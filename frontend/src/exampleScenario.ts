@@ -1,4 +1,4 @@
-import example from "../../docs/contracts/scenario.example.json";
+import example from "../../contracts/scenario.example.json";
 import type { ScenarioInput } from "./scenario";
 
 // Compile-time check: if the shared example stops matching the TypeScript
