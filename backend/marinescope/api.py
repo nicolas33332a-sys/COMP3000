@@ -19,8 +19,11 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy.orm import Session
 
-from . import __version__, config, repository
+from datetime import date
+
+from . import __version__, config, reference, repository
 from .coverage import Coverage
+from .reference import ReferenceDataUnavailable
 from .scenario import Scenario, ScenarioInput
 
 router = APIRouter(prefix="/api")
@@ -54,6 +57,8 @@ def health(request: Request) -> dict[str, str]:
 
 @router.post("/scenarios", status_code=201, response_model=Scenario)
 def create_scenario(data: ScenarioInput, session: SessionDep):
+    if not config.manifest_path().exists():
+        raise ReferenceDataUnavailable("The reference data manifest is missing, so coverage cannot be checked.")
     problems = Coverage.from_manifest(config.manifest_path()).problems(data)
     if problems:
         return _error(422, "validation_error", "The scenario is outside the available data.", problems)
@@ -71,6 +76,25 @@ def read_scenario(scenario_id: uuid.UUID, session: SessionDep) -> Scenario:
     if scenario is None:
         raise HTTPException(404, f"No scenario with id {scenario_id}.")
     return scenario
+
+
+@router.get("/reference-data")
+def reference_metadata() -> dict:
+    """What reference data is available: dataset, units, region, dates, grid."""
+    return reference.load().metadata()
+
+
+@router.get("/reference-data/sst")
+def reference_field(day: Annotated[date, Query(alias="date", description="UTC day, YYYY-MM-DD")]) -> dict:
+    """One day's reference sea surface temperature grid."""
+    field = reference.load().field(day)
+    if field is None:
+        raise HTTPException(404, f"No reference data for {day}.")
+    return field
+
+
+def _reference_unavailable(request: Request, exc: ReferenceDataUnavailable) -> JSONResponse:
+    return _error(503, "reference_data_unavailable", str(exc))
 
 
 def _invalid_request(request: Request, exc: RequestValidationError) -> JSONResponse:
@@ -111,6 +135,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
     app.add_exception_handler(RequestValidationError, _invalid_request)
     app.add_exception_handler(OperationalError, _database_down)
     app.add_exception_handler(IntegrityError, _rejected_by_database)
+    app.add_exception_handler(ReferenceDataUnavailable, _reference_unavailable)
     app.add_exception_handler(HTTPException, _http_error)
     app.include_router(router)
     return app

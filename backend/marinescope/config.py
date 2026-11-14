@@ -26,6 +26,11 @@ def database_url() -> str:
     return os.environ.get("DATABASE_URL", DEFAULT_DATABASE_URL)
 
 
+def data_dir() -> Path:
+    """Where large downloaded/derived data lives. Never committed to Git."""
+    return Path(os.environ.get("MARINESCOPE_DATA_DIR", REPO_ROOT / "data")).resolve()
+
+
 def manifest_path() -> Path:
     """The provenance manifest describing which reference data is available."""
     default = REPO_ROOT / "manifests" / "oisst-pilot-manifest.json"

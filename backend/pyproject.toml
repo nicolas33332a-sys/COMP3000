@@ -19,14 +19,15 @@ dependencies = [
     "geoalchemy2>=0.15",
     "shapely>=2.0",
     "python-dotenv>=1.0",
-]
-
-[project.optional-dependencies]
-# Needed only for the NOAA data pipeline (download, subset, inspect, plot).
-data = [
+    # The API reads the downloaded NOAA subset (NetCDF) to serve the reference layer.
     "numpy>=1.26",
     "xarray>=2024.1",
     "netCDF4>=1.6",
+]
+
+[project.optional-dependencies]
+# Needed only for the reference plot drawn by marinescope.pipeline.inspect_oisst.
+data = [
     "matplotlib>=3.8",
 ]
 dev = [

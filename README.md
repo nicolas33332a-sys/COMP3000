@@ -4,15 +4,18 @@ A full-stack platform for configuring simulated marine surveys, reconstructing s
 surface temperature (SST) from sparse readings, and comparing saved results.
 COMP3000 final-year project, BSc Computer Science (Artificial Intelligence).
 
-**Status (14 November 2026): Sprint 1, backlog items MS-02 to MS-04.** What exists and has been run:
+**Status (14 November 2026): Sprint 1, backlog items MS-02 to MS-06.** What exists and has been run:
 
 - the agreed scenario contract with validation and tests;
-- a FastAPI backend that creates, lists and reads scenarios in PostgreSQL/PostGIS;
+- a FastAPI backend that creates, lists and reads scenarios in PostgreSQL/PostGIS and
+  serves the downloaded NOAA temperature field;
 - a data pipeline that downloads a small NOAA OISST subset, inspects it and plots it;
-- a React/TypeScript shell page that reaches the API and shows the example scenario.
+- a browser app (React, TypeScript, MapLibre) with a scenario form, a list of saved
+  scenarios, and a map showing the route over the NOAA reference temperature layer
+  with its date, units, source and colour scale.
 
-Not built yet: the scenario form, the map, simulation, reconstruction (IDW or SHRED),
-accounts. The browser does not use the scenario endpoints yet.
+Not built yet: simulation of vessel readings, reconstruction (IDW or SHRED), accounts,
+editing or deleting scenarios.
 
 ## Layout
 
@@ -77,8 +80,11 @@ cd frontend
 npm run dev
 ```
 
-Open http://localhost:5173. The page should say "API reachable". Vite forwards
-`/api/*` to the backend on port 8000. API docs, where the scenario endpoints can be
+Open http://localhost:5173. Vite forwards `/api/*` to the backend on port 8000.
+The map's temperature layer needs the NOAA pilot data (see "NOAA pilot data" below) to have
+been downloaded once on this machine; without it the page says so and the rest still works.
+The coastline outline is fetched from MapLibre's public demo tiles and needs internet
+access; the temperature grid, region and route do not. API docs, where the scenario endpoints can be
 tried by hand: http://127.0.0.1:8000/docs.
 
 Stop the database with `docker compose stop`. Saved scenarios are kept in a Docker
@@ -90,8 +96,8 @@ volume and are still there next time. `docker compose down -v` deletes them.
 powershell -ExecutionPolicy Bypass -File scripts/check.ps1
 ```
 
-This runs the backend tests (`pytest`) and the frontend type-check and build
-(`npm run build`). The database container must be running; the tests use their own
+This runs the backend tests (`pytest`), the frontend tests (`npm test`) and the
+frontend type-check and build (`npm run build`). The database container must be running; the tests use their own
 database (`marinescope_test`), so they never touch saved scenarios. No network or
 downloaded data is needed.
 

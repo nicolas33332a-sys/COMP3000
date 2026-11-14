@@ -11,14 +11,16 @@ Push-Location "$root/backend"
 $backend = $LASTEXITCODE
 Pop-Location
 
-Write-Host "== Frontend type-check and build =="
+Write-Host "== Frontend tests, type-check and build =="
 Push-Location "$root/frontend"
+npm test
+$frontendTests = $LASTEXITCODE
 npm run build
 $frontend = $LASTEXITCODE
 Pop-Location
 
-if ($backend -ne 0 -or $frontend -ne 0) {
-    Write-Host "CHECKS FAILED (backend=$backend, frontend=$frontend)"
+if ($backend -ne 0 -or $frontend -ne 0 -or $frontendTests -ne 0) {
+    Write-Host "CHECKS FAILED (backend=$backend, frontend tests=$frontendTests, frontend build=$frontend)"
     exit 1
 }
 Write-Host "ALL CHECKS PASSED"
