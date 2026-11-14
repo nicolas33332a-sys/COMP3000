@@ -33,6 +33,30 @@ TEST_DATABASE_URL = os.environ.get(
     make_url(config.DEFAULT_DATABASE_URL).set(database="marinescope_test").render_as_string(hide_password=False),
 )
 
+
+
+def refuse_unsafe_test_database(test_url: str, app_url: str) -> None:
+    """Stop before any destructive setup if the tests point at real data.
+
+    The fixtures below empty the scenarios table. That must only ever happen
+    in a database whose name ends in "_test" and that is not the one the
+    application uses.
+    """
+    test, application = make_url(test_url), make_url(app_url)
+    name = test.database or ""
+    same_database = (test.host, test.port or 5432, name) == (
+        application.host,
+        application.port or 5432,
+        application.database,
+    )
+    if same_database or not name.endswith("_test"):
+        raise pytest.UsageError(
+            f"Refusing to run: the test database is {name!r} on {test.host}:{test.port or 5432}. "
+            'The tests delete data, so TEST_DATABASE_URL must name a database ending in "_test" '
+            "that is not the application database."
+        )
+
+
 # Without this, tests hang instead of failing when the database is not running.
 FAIL_FAST = {"connect_timeout": 5}
 
@@ -45,6 +69,7 @@ def example() -> dict:
 @pytest.fixture(scope="session")
 def database_url() -> str:
     """Create the test database if needed and bring it to the latest migration."""
+    refuse_unsafe_test_database(TEST_DATABASE_URL, config.database_url())
     url = make_url(TEST_DATABASE_URL)
     admin = create_engine(url.set(database="postgres"), isolation_level="AUTOCOMMIT", connect_args=FAIL_FAST)
     with admin.connect() as connection:

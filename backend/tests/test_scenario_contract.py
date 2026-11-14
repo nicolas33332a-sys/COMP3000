@@ -37,6 +37,18 @@ def test_departure_time_is_normalised_to_utc(example):
     assert scenario.vessel.departure_time.hour == 6
 
 
+def test_names_are_trimmed(example):
+    example["name"] = "  Transect A  "
+    example["vessel"]["name"] = "	Survey vessel 1 "
+    scenario = ScenarioInput.model_validate(example)
+    assert (scenario.name, scenario.vessel.name) == ("Transect A", "Survey vessel 1")
+
+
+def test_name_of_100_characters_with_padding_is_accepted(example):
+    example["vessel"]["name"] = " " + "x" * 100 + " "
+    assert len(ScenarioInput.model_validate(example).vessel.name) == 100
+
+
 def _set(data: dict, path: list, value) -> dict:
     data = copy.deepcopy(data)
     target = data
@@ -66,6 +78,8 @@ INVALID_CASES = [
     ("zero sampling interval", ["sampling", "interval_minutes"], 0),
     ("negative noise", ["sampling", "noise_std_c"], -0.1),
     ("blank name", ["name"], "   "),
+    ("blank vessel name", ["vessel", "name"], "   "),
+    ("name too long after trimming", ["name"], "x" * 101),
     ("unknown field", ["colour"], "blue"),
 ]
 

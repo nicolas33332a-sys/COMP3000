@@ -112,6 +112,9 @@ INVALID = [
     ("end before start", ["data_period", "end_date"], "2024-05-01", "data_period"),
     ("departure without timezone", ["vessel", "departure_time"], "2024-06-01T06:00:00", "vessel.departure_time"),
     ("zero speed", ["vessel", "speed_knots"], 0, "vessel.speed_knots"),
+    # Regression: these passed validation, broke a table constraint and gave HTTP 500.
+    ("whitespace-only vessel name", ["vessel", "name"], " ", "vessel.name"),
+    ("whitespace-only scenario name", ["name"], " 	 ", "name"),
     ("one waypoint", ["waypoints"], [{"lon": -6.0, "lat": 49.5}], "waypoints"),
     ("region outside downloaded data", ["region", "north"], 60.0, "region"),
     ("period outside downloaded data", ["data_period", "end_date"], "2024-06-20", "data_period"),
@@ -128,6 +131,14 @@ def test_invalid_scenario_is_rejected_with_a_message_and_not_stored(client, db, 
     assert all(problem["message"] for problem in body["problems"])
     assert field in [problem["field"] for problem in body["problems"]]
     assert count_rows(db) == 0
+
+
+def test_names_are_stored_trimmed(client, example):
+    example["vessel"]["name"] = "  Survey vessel 1  "
+    created = client.post("/api/scenarios", json=example)
+    assert created.status_code == 201
+    assert created.json()["vessel"]["name"] == "Survey vessel 1"
+    assert client.get(f"/api/scenarios/{created.json()['id']}").json()["vessel"]["name"] == "Survey vessel 1"
 
 
 def test_missing_required_field_is_rejected_and_not_stored(client, db, example):

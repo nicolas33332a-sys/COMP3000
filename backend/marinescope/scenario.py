@@ -22,13 +22,23 @@ from datetime import date, datetime, timezone
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    AwareDatetime,
+    BaseModel,
+    ConfigDict,
+    Field,
+    StringConstraints,
+    field_validator,
+    model_validator,
+)
 
 MIN_WAYPOINTS = 2
 MAX_WAYPOINTS = 100
 
 Longitude = Annotated[float, Field(ge=-180, le=180, description="Degrees east, WGS84, -180..180")]
 Latitude = Annotated[float, Field(ge=-90, le=90, description="Degrees north, WGS84, -90..90")]
+# Surrounding spaces are removed first, so a name made only of spaces is too short.
+Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
 
 
 class _Strict(BaseModel):
@@ -76,7 +86,7 @@ class DataPeriod(_Strict):
 
 
 class VesselSettings(_Strict):
-    name: Annotated[str, Field(min_length=1, max_length=100)]
+    name: Name
     speed_knots: Annotated[float, Field(gt=0, le=50, description="Constant speed over ground, knots")]
     departure_time: Annotated[
         AwareDatetime,
@@ -100,7 +110,7 @@ class SamplingSettings(_Strict):
 class ScenarioInput(_Strict):
     """What a client submits to create a scenario."""
 
-    name: Annotated[str, Field(min_length=1, max_length=100)]
+    name: Name
     region: RegionBounds
     data_period: DataPeriod
     vessel: VesselSettings
@@ -109,14 +119,6 @@ class ScenarioInput(_Strict):
         Field(min_length=MIN_WAYPOINTS, max_length=MAX_WAYPOINTS, description="Route in visiting order"),
     ]
     sampling: SamplingSettings
-
-    @field_validator("name")
-    @classmethod
-    def _name_not_blank(cls, value: str) -> str:
-        value = value.strip()
-        if not value:
-            raise ValueError("name must not be blank")
-        return value
 
     @model_validator(mode="after")
     def _consistent(self) -> ScenarioInput:

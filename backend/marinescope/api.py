@@ -16,7 +16,7 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sqlalchemy import create_engine, text
-from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy.orm import Session
 
 from . import __version__, config, repository
@@ -87,6 +87,12 @@ def _database_down(request: Request, exc: OperationalError) -> JSONResponse:
     return _error(503, "database_unavailable", "The database cannot be reached. Is it running?")
 
 
+def _rejected_by_database(request: Request, exc: IntegrityError) -> JSONResponse:
+    # Should not happen: it means a table constraint is stricter than scenario.py.
+    # Answer clearly instead of with a bare 500, and fix the validation gap.
+    return _error(422, "validation_error", "The database rejected this scenario; nothing was saved.")
+
+
 def _http_error(request: Request, exc: HTTPException) -> JSONResponse:
     code = "not_found" if exc.status_code == 404 else "http_error"
     return _error(exc.status_code, code, str(exc.detail))
@@ -104,6 +110,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
     )
     app.add_exception_handler(RequestValidationError, _invalid_request)
     app.add_exception_handler(OperationalError, _database_down)
+    app.add_exception_handler(IntegrityError, _rejected_by_database)
     app.add_exception_handler(HTTPException, _http_error)
     app.include_router(router)
     return app
